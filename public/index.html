@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Snow Sparkle Match</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Snow Sparkle">
+<meta name="theme-color" content="#1b2a6b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="snow" aria-hidden="true"></div>
+
+<main id="app">
+  <section id="title" class="screen active">
+    <div class="hero" id="heroBig"></div>
+    <h1>Snow Sparkle<br>Match</h1>
+    <p class="sub">with Princess Lumi</p>
+    <button id="playBtn" class="btn big">Play</button>
+  </section>
+
+  <section id="levels" class="screen">
+    <h2>Pick a level</h2>
+    <div id="levelGrid"></div>
+    <button id="levelsBack" class="btn ghost">Back</button>
+  </section>
+
+  <section id="game" class="screen">
+    <header class="hud">
+      <button id="backBtn" class="icon-btn" aria-label="Levels">&#8249;</button>
+      <div class="portrait" id="portrait"></div>
+      <div class="info">
+        <div id="lvlName">Level 1</div>
+        <div id="goal"></div>
+        <div class="bar"><i id="barFill"></i></div>
+      </div>
+      <div class="moves"><b id="moves">20</b><span>moves</span></div>
+      <button id="muteBtn" class="icon-btn" aria-label="Sound"></button>
+    </header>
+    <div id="boardWrap"><div id="board"></div></div>
+    <div id="toast"></div>
+  </section>
+</main>
+
+<div id="modal" hidden>
+  <div class="card">
+    <div class="hero small" id="modalHero"></div>
+    <h2 id="modalTitle"></h2>
+    <div id="modalStars"></div>
+    <p id="modalText"></p>
+    <div class="row">
+      <button id="modalAlt" class="btn ghost">Levels</button>
+      <button id="modalMain" class="btn">Next</button>
+    </div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
