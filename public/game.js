@@ -65,19 +65,19 @@ function tileSVG(type, special) {
   const body = special === 'bomb' ? bombSVG() : SHAPES[type]() + (special ? OVERLAY[special] : '');
   return `<svg viewBox="0 0 100 100">${body}</svg>`;
 }
-/* Princess Lumi: original character. Plum hair buns, star clips, snowflake tiara, lilac cape. */
+/* Princess Lumi: original character. pale gold hair buns, blue star clips, snowflake tiara, ice-blue gown. */
 function lumiSVG(happy) {
   const mouth = happy
     ? '<path d="M84 122q16 20 32 0z" fill="#b0405f"/>'
     : '<path d="M86 124q14 12 28 0" fill="none" stroke="#b0405f" stroke-width="4" stroke-linecap="round"/>';
   return `<svg viewBox="0 0 200 200">
-  <path d="M34 200q8-52 66-54 58 2 66 54z" fill="#8a63e0"/>
-  <circle cx="50" cy="62" r="25" fill="#4a2f73"/><circle cx="150" cy="62" r="25" fill="#4a2f73"/>
-  <circle cx="100" cy="94" r="58" fill="#4a2f73"/>
+  <path d="M34 200q8-52 66-54 58 2 66 54z" fill="#4fb8ee"/>
+  <circle cx="50" cy="62" r="25" fill="#f7e3a0"/><circle cx="150" cy="62" r="25" fill="#f7e3a0"/>
+  <circle cx="100" cy="94" r="58" fill="#f7e3a0"/>
   <ellipse cx="100" cy="154" rx="50" ry="15" fill="#fff"/>
   <ellipse cx="100" cy="104" rx="45" ry="46" fill="#eeb98f"/>
-  <path d="M54 100q0-52 46-52t46 52q-18-30-46-26-28-4-46 26z" fill="#4a2f73"/>
-  <polygon points="${starPts(50, 58, 11, 5)}" fill="#ffd23c"/><polygon points="${starPts(150, 58, 11, 5)}" fill="#ffd23c"/>
+  <path d="M54 100q0-52 46-52t46 52q-18-30-46-26-28-4-46 26z" fill="#f7e3a0"/>
+  <polygon points="${starPts(50, 58, 11, 5)}" fill="#3fa9f5"/><polygon points="${starPts(150, 58, 11, 5)}" fill="#3fa9f5"/>
   <path d="M72 56l8-20 10 13 10-23 10 23 10-13 8 20z" fill="#d8f3ff" stroke="#7cc8f5" stroke-width="3" stroke-linejoin="round"/>
   <circle cx="100" cy="46" r="5" fill="#ff5fa2"/>
   <ellipse cx="82" cy="104" rx="7" ry="9" fill="#2b2140"/><ellipse cx="118" cy="104" rx="7" ry="9" fill="#2b2140"/>
@@ -304,6 +304,45 @@ function beam(r, c, dir) {
   setTimeout(() => el.remove(), 320);
 }
 
+/* Ice magic: snowflake bolts fly from the princess portrait to each fired special, then burst. */
+const MAGIC_MS = 260;
+const BOLT_SVG = (() => {
+  let arms = '';
+  for (let i = 0; i < 6; i++) arms += `<g transform="rotate(${i * 60} 50 50)"><path d="M50 50V10M50 26l-11-10M50 26l11-10"/></g>`;
+  return `<svg viewBox="0 0 100 100"><g stroke="#fff" stroke-width="9" stroke-linecap="round" fill="none">${arms}</g></svg>`;
+})();
+function burst(x, y) {
+  for (let i = 0; i < 12; i++) {
+    const el = document.createElement('div');
+    el.className = 'spark';
+    document.body.appendChild(el);
+    const a = (i * Math.PI) / 6 + Math.random() * 0.4, d = 36 + rnd(46);
+    el.animate(
+      [{ transform: `translate(${x}px,${y}px) scale(1.4)`, opacity: 1 },
+       { transform: `translate(${x + d * Math.cos(a)}px,${y + d * Math.sin(a)}px) scale(0)`, opacity: 0 }],
+      { duration: 420 + rnd(200), easing: 'ease-out' }
+    ).onfinish = () => el.remove();
+  }
+}
+function castMagic(tiles) {
+  const por = $('#portrait'), p = por.getBoundingClientRect();
+  const b = boardEl.getBoundingClientRect(), s = b.width / N;
+  const px = p.left + p.width / 2, py = p.top + p.height / 2;
+  por.classList.remove('cast'); void por.offsetWidth; por.classList.add('cast');
+  for (const t of tiles) {
+    const tx = b.left + (t.c + 0.5) * s, ty = b.top + (t.r + 0.5) * s;
+    const el = document.createElement('div');
+    el.className = 'bolt';
+    el.innerHTML = BOLT_SVG;
+    document.body.appendChild(el);
+    el.animate(
+      [{ transform: `translate(${px}px,${py}px) scale(.4) rotate(0deg)` },
+       { transform: `translate(${tx}px,${ty}px) scale(1.5) rotate(360deg)` }],
+      { duration: MAGIC_MS, easing: 'ease-in' }
+    ).onfinish = () => { el.remove(); burst(tx, ty); };
+  }
+}
+
 function commonType() {
   const n = {};
   let best = 0, bt = 0;
@@ -314,18 +353,25 @@ function commonType() {
 /* Clear a set of tiles (firing any specials among them), spawn new specials, then apply gravity. */
 async function clearTiles(set, spawns, combo) {
   const queue = [...set];
-  let blasted = false;
+  const fired = [];
   const add = (t) => { if (t && !set.has(t)) { set.add(t); queue.push(t); } };
   while (queue.length) {
     const t = queue.pop();
     if (!t.special || t.fired) continue;
-    t.fired = true; blasted = true;
-    if (t.special === 'h') { for (let i = 0; i < N; i++) add(grid[t.r][i]); beam(t.r, t.c, 'h'); }
-    else if (t.special === 'v') { for (let i = 0; i < N; i++) add(grid[i][t.c]); beam(t.r, t.c, 'v'); }
+    t.fired = true; fired.push(t);
+    if (t.special === 'h') { for (let i = 0; i < N; i++) add(grid[t.r][i]); }
+    else if (t.special === 'v') { for (let i = 0; i < N; i++) add(grid[i][t.c]); }
     else {
       const target = t.target !== undefined ? t.target : commonType();
       for (const row of grid) for (const o of row) if (o && o.type === target) add(o);
     }
+  }
+  const blasted = fired.length > 0;
+  if (blasted) {
+    // the princess throws ice magic at each special before it goes off
+    castMagic(fired);
+    await sleep(MAGIC_MS);
+    for (const t of fired) if (t.special !== 'bomb') beam(t.r, t.c, t.special);
   }
   for (const t of set) {
     score += 10 * combo;
@@ -389,7 +435,7 @@ async function trySwap(a, b) {
   const aB = a.special === 'bomb', bB = b.special === 'bomb';
   if (aB || bB) {
     const set = new Set();
-    if (aB && bB) { a.fired = b.fired = true; for (const row of grid) for (const t of row) set.add(t); audio.blast(); }
+    if (aB && bB) { for (const row of grid) for (const t of row) set.add(t); audio.blast(); }
     else { const bomb = aB ? a : b, other = aB ? b : a; bomb.target = other.type; set.add(bomb); }
     await clearTiles(set, [], 1);
     await resolve(2, null);
@@ -514,7 +560,7 @@ async function finish(won) {
   $('#modalHero').innerHTML = lumiSVG(won);
   $('#modalTitle').textContent = won ? (last ? 'You did it all!' : 'Level complete!') : 'So close!';
   $('#modalStars').innerHTML = won ? '★'.repeat(stars) + `<span class="off">${'★'.repeat(3 - stars)}</span>` : '';
-  $('#modalText').textContent = won ? `Score: ${score}` : 'Lumi believes in you. Try again?';
+  $('#modalText').textContent = won ? `Score: ${score}` : 'You can do it. Try again?';
   const main = $('#modalMain');
   main.textContent = won ? (last ? 'Play again' : 'Next') : 'Try again';
   main.onclick = () => { $('#modal').hidden = true; startLevel(won ? (last ? 0 : levelIdx + 1) : levelIdx); };
