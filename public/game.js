@@ -65,19 +65,19 @@ function tileSVG(type, special) {
   const body = special === 'bomb' ? bombSVG() : SHAPES[type]() + (special ? OVERLAY[special] : '');
   return `<svg viewBox="0 0 100 100">${body}</svg>`;
 }
-/* Princess Lumi: original character. Plum hair buns, star clips, snowflake tiara, lilac cape. */
+/* Princess Lumi: original character. pale gold hair buns, blue star clips, snowflake tiara, ice-blue gown. */
 function lumiSVG(happy) {
   const mouth = happy
     ? '<path d="M84 122q16 20 32 0z" fill="#b0405f"/>'
     : '<path d="M86 124q14 12 28 0" fill="none" stroke="#b0405f" stroke-width="4" stroke-linecap="round"/>';
   return `<svg viewBox="0 0 200 200">
-  <path d="M34 200q8-52 66-54 58 2 66 54z" fill="#8a63e0"/>
-  <circle cx="50" cy="62" r="25" fill="#4a2f73"/><circle cx="150" cy="62" r="25" fill="#4a2f73"/>
-  <circle cx="100" cy="94" r="58" fill="#4a2f73"/>
+  <path d="M34 200q8-52 66-54 58 2 66 54z" fill="#4fb8ee"/>
+  <circle cx="50" cy="62" r="25" fill="#f7e3a0"/><circle cx="150" cy="62" r="25" fill="#f7e3a0"/>
+  <circle cx="100" cy="94" r="58" fill="#f7e3a0"/>
   <ellipse cx="100" cy="154" rx="50" ry="15" fill="#fff"/>
   <ellipse cx="100" cy="104" rx="45" ry="46" fill="#eeb98f"/>
-  <path d="M54 100q0-52 46-52t46 52q-18-30-46-26-28-4-46 26z" fill="#4a2f73"/>
-  <polygon points="${starPts(50, 58, 11, 5)}" fill="#ffd23c"/><polygon points="${starPts(150, 58, 11, 5)}" fill="#ffd23c"/>
+  <path d="M54 100q0-52 46-52t46 52q-18-30-46-26-28-4-46 26z" fill="#f7e3a0"/>
+  <polygon points="${starPts(50, 58, 11, 5)}" fill="#3fa9f5"/><polygon points="${starPts(150, 58, 11, 5)}" fill="#3fa9f5"/>
   <path d="M72 56l8-20 10 13 10-23 10 23 10-13 8 20z" fill="#d8f3ff" stroke="#7cc8f5" stroke-width="3" stroke-linejoin="round"/>
   <circle cx="100" cy="46" r="5" fill="#ff5fa2"/>
   <ellipse cx="82" cy="104" rx="7" ry="9" fill="#2b2140"/><ellipse cx="118" cy="104" rx="7" ry="9" fill="#2b2140"/>
