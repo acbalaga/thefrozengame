@@ -14,6 +14,12 @@ const LEVELS = [
   { moves: 28, types: 6, goal: { kind: 'score', n: 1000 } },
   { moves: 30, types: 6, goal: { kind: 'collect', type: 1, n: 16 } },
   { moves: 40, types: 5, goal: { kind: 'frost', map: ['.......', '..X.X..', '.XXXXX.', '..XXX..', '...X...', '.......', '.......'] } },
+  { moves: 30, types: 6, goal: { kind: 'score', n: 1500 } },
+  { moves: 30, types: 6, goal: { kind: 'collect', type: 2, n: 20 } },
+  { moves: 48, types: 5, goal: { kind: 'frost', map: ['.......', '.XXXXX.', '.X...X.', '.X...X.', '.X...X.', '.XXXXX.', '.......'] } },
+  { moves: 32, types: 6, goal: { kind: 'collect', type: 3, n: 22 } },
+  { moves: 34, types: 6, goal: { kind: 'score', n: 2000 } },
+  { moves: 52, types: 5, goal: { kind: 'frost', map: ['.......', '..XXX..', '.XXXXX.', '.XXXXX.', '.XXXXX.', '..XXX..', '.......'] } },
 ];
 
 /* ---------- save ---------- */
@@ -376,7 +382,11 @@ async function clearTiles(set, spawns, combo) {
   for (const t of set) {
     score += 10 * combo;
     if (L.goal.kind === 'collect' && t.type === L.goal.type) collected++;
-    if (frost[t.r][t.c]) { frost[t.r][t.c] = false; frostLeft--; cells[t.r][t.c].classList.remove('frost'); }
+    // frost melts under a cleared tile and on the squares touching it
+    for (const [dr, dc] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]) {
+      const r = t.r + dr, c = t.c + dc;
+      if (r >= 0 && r < N && c >= 0 && c < N && frost[r][c]) { frost[r][c] = false; frostLeft--; cells[r][c].classList.remove('frost'); }
+    }
     grid[t.r][t.c] = null;
     t.el.classList.add('pop');
   }

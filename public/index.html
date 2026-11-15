@@ -22,6 +22,10 @@
     <div class="hero" id="heroBig"></div>
     <h1>Snow Sparkle<br>Match</h1>
     <button id="playBtn" class="btn big">Play</button>
+    <div class="row">
+      <button id="paintBtn" class="btn blue">Ice Magic</button>
+      <button id="catchBtn" class="btn blue">Snow Catch</button>
+    </div>
   </section>
 
   <section id="levels" class="screen">
@@ -45,6 +49,14 @@
     <div id="boardWrap"><div id="board"></div></div>
     <div id="toast"></div>
   </section>
+  <section id="mini" class="screen">
+    <header class="hud">
+      <button id="miniBack" class="icon-btn" aria-label="Back">&#8249;</button>
+      <div class="portrait" id="miniPortrait"></div>
+      <div class="info"><div id="miniName"></div><div id="miniInfo"></div></div>
+    </header>
+    <canvas id="miniCanvas"></canvas>
+  </section>
 </main>
 
 <div id="modal" hidden>
@@ -61,5 +73,6 @@
 </div>
 
 <script src="game.js"></script>
+<script src="mini.js"></script>
 </body>
 </html>
