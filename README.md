@@ -1,6 +1,6 @@
 # Snow Sparkle Match
 
-A small winter match-3 game starring Princess Lumi. Plain HTML/CSS/JS, no build step. Audio is synthesized with Web Audio, so there are no sound files.
+A small winter match-3 game starring a snow princess with ice magic. Plain HTML/CSS/JS, no build step. Audio is synthesized with Web Audio, so there are no sound files.
 
 ## Run and deploy
 
